@@ -14,8 +14,6 @@ pipeline {
             }
         }
 
-        
-
         stage('Pull Docker Images') {
             parallel {
                 stage('Pull GoRest Image') {
@@ -27,7 +25,7 @@ pipeline {
                 stage('Pull Booking Image') {
                     steps {
                         //sh 'docker pull naveenkhunteta/mybookingapi:1.0'
-						bat 'docker pull naveenkhunteta/mybookingsapi:2.0'
+						bat 'docker pull ayeshayusuf/mybookingsapi:2.0'
                     }
                 }
             }
@@ -35,8 +33,9 @@ pipeline {
 
         stage('Prepare Newman Results Directory') {
             steps {
-                //sh 'mkdir -p $(pwd)/newman'
-				  bat 'mkdir -p %cd%/newman'
+				  //sh 'mkdir -p $(pwd)/newman'
+				  bat 'if not exist "%cd%/newman/" mkdir "%cd%/newman/"'
+				  //This checks if the "newman" folder doesn't exist then creates the folder ow doesnt do anything
             }
         }
 
