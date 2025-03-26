@@ -1,0 +1,456 @@
+{
+	"info": {
+		"_postman_id": "d8da5a1e-f31e-4eb0-8721-ede65864929f",
+		"name": "BookingAPIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1655479",
+		"_collection_link": "https://blue-capsule-323578.postman.co/workspace/37f8486d-044b-485a-95e2-cf07bbb7f533/collection/1655479-d8da5a1e-f31e-4eb0-8721-ede65864929f?action=share&source=collection_link&creator=1655479"
+	},
+	"item": [
+		{
+			"name": "1-CreateToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// const response=pm.response.json();\r",
+							"// const tokenId=response.token;\r",
+							"// console.log(\"tokenId:\"+tokenId);\r",
+							"// pm.variables.set(\"token_id\",tokenId);\r",
+							"\r",
+							"//This is a traditional way(mentioned above) but in our case the token has to be\r",
+							"//generated before the UpdateBookingById and DeleteBookingById as it may expire in a\r",
+							"//few minutes so generating it earliy and using will not work as it will expire thus\r",
+							"// should be generated before using it(in the UpdateBookingById and DeleteBookingById)  \r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\" : \"{{username}}\",\n    \"password\" : \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/auth",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2-GetBookingIds",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/booking",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3-CreateBooking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const bookingId=pm.response.json().bookingid;\r",
+							"\r",
+							"console.log(\"New Booking Id:\"+bookingId);\r",
+							"pm.variables.set(\"booking_id\",bookingId);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\" : \"Rahul\",\n    \"lastname\" : \"Yadav\",\n    \"totalprice\" : 111,\n    \"depositpaid\" : true,\n    \"bookingdates\" : {\n        \"checkin\" : \"2018-01-01\",\n        \"checkout\" : \"2019-01-01\"\n    },\n    \"additionalneeds\" : \"Breakfast\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4-GetBookingById",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//assignment\r",
+							"//call the post api to create a booking using the script\r",
+							"//fetch the booking id and store it in a variable\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{booking_id}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{booking_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5-UpdateBookingById",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// if(pm.info.requestName=='5-UpdateBookingById'||pm.info.requestName=='6-DeleteBookingById'){\r",
+							"\r",
+							"// //Generate a token using the auth api(CreateToken) and fetch the token from the response\r",
+							"\r",
+							"// //the sendRequest method will send the request programmatically\r",
+							"// //ie using a script\r",
+							"\r",
+							"// //The elements to consider before any request will be \r",
+							"// //1.http method the api uses like GET,POST,PUT,DELETE etc\r",
+							"// //2.URL\r",
+							"// //3.header in curly brackets as there are multiple keys:values\r",
+							"// //4.body along with the mode,raw etc\r",
+							"\r",
+							"// pm.sendRequest({\r",
+							"//     method: 'POST',\r",
+							"//     url: pm.environment.get(\"baseURL\")+'/auth',\r",
+							"//     header:{\r",
+							"//         'Content-Type' : 'application/json'\r",
+							"//     },\r",
+							"//     body:{\r",
+							"//         mode: 'raw',\r",
+							"//         //Converts a JavaScript Object to a JSON string.\r",
+							"//         //AS we ultimately need JSON and not JS Object\r",
+							"\r",
+							"//             raw: JSON.stringify({\r",
+							"//                 //{} wont work here it only works in the body\r",
+							"//                 \"username\": pm.environment.get(\"username\"),\r",
+							"//                 //The username is picked up from the environment variable\r",
+							"//                 \"password\": pm.environment.get(\"password\")\r",
+							"//                 //The password is picked up from the environment variable\r",
+							"//             })\r",
+							"//         //The entire javascript will be converted in JSON and stored in\r",
+							"//         //a raw object\r",
+							"//     }\r",
+							"// },function(error,response){\r",
+							"// //The response of the request is stored in the \"response\" object\r",
+							"// //ow if it returns an \"error\" then its stored in \"error\" object\r",
+							"// //This already predefined in javascript\r",
+							"// //The response will be in JSON\r",
+							"\r",
+							"//     if(error){\r",
+							"//         console.log(error);\r",
+							"//     }\r",
+							"//     else{\r",
+							"//         //The response will be in JSON and needs to be converted to a \r",
+							"//         //javascript object\r",
+							"//         const responseBody=JSON.parse(response.text());\r",
+							"//         const newTokenId=responseBody.token;\r",
+							"//         console.log(\"new token Id:\"+newTokenId);\r",
+							"//         pm.variables.set(\"new_token_id\",newTokenId);\r",
+							"//         }\r",
+							"//     })\r",
+							"// }"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Cookie",
+						"value": "token={{new_token_id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\" : \"Rahul\",\n    \"lastname\" : \"Yadav\",\n    \"totalprice\" : 200, //changing the price from 100 to 200\n    \"depositpaid\" : true,\n    \"bookingdates\" : {\n        \"checkin\" : \"2018-01-01\",\n        \"checkout\" : \"2019-01-01\"\n    },\n    \"additionalneeds\" : \"BF\" //changing \"Breakfast\" to \"Dinner\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{booking_id}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{booking_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6-DeleteBookingById",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// if(pm.info.requestName=='5-UpdateBookingById'||pm.info.requestName=='6-DeleteBookingById'){\r",
+							"\r",
+							"// //Generate a token using the auth api(CreateToken) and fetch the token from the response\r",
+							"\r",
+							"// //the sendRequest method will send the request programmatically\r",
+							"// //ie using a script\r",
+							"\r",
+							"// //The elements to consider before any request will be \r",
+							"// //1.http method the api uses like GET,POST,PUT,DELETE etc\r",
+							"// //2.URL\r",
+							"// //3.header in curly brackets as there are multiple keys:values\r",
+							"// //4.body along with the mode,raw etc\r",
+							"\r",
+							"// pm.sendRequest({\r",
+							"//     method: 'POST',\r",
+							"//     url: pm.environment.get(\"baseURL\")+'/auth',\r",
+							"//     header:{\r",
+							"//         'Content-Type' : 'application/json'\r",
+							"//     },\r",
+							"//     body:{\r",
+							"//         mode: 'raw',\r",
+							"//         //Converts a JavaScript Object to a JSON string.\r",
+							"//         //AS we ultimately need JSON and not JS Object\r",
+							"\r",
+							"//             raw: JSON.stringify({\r",
+							"//                 //{} wont work here it only works in the body\r",
+							"//                 \"username\": pm.environment.get(\"username\"),\r",
+							"//                 //The username is picked up from the environment variable\r",
+							"//                 \"password\": pm.environment.get(\"password\")\r",
+							"//                 //The password is picked up from the environment variable\r",
+							"//             })\r",
+							"//         //The entire javascript will be converted in JSON and stored in\r",
+							"//         //a raw object\r",
+							"//     }\r",
+							"// },function(error,response){\r",
+							"// //The response of the request is stored in the \"response\" object\r",
+							"// //ow if it returns an \"error\" then its stored in \"error\" object\r",
+							"// //This already predefined in javascript\r",
+							"// //The response will be in JSON\r",
+							"\r",
+							"//     if(error){\r",
+							"//         console.log(error);\r",
+							"//     }\r",
+							"//     else{\r",
+							"//         //The response will be in JSON and needs to be converted to a \r",
+							"//         //javascript object\r",
+							"//         const responseBody=JSON.parse(response.text());\r",
+							"//         const newTokenId=responseBody.token;\r",
+							"//         console.log(\"new token Id:\"+newTokenId);\r",
+							"//         pm.variables.set(\"new_token_id\",newTokenId);\r",
+							"//         }\r",
+							"//     })\r",
+							"// }"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Cookie",
+						"value": "token={{new_token_id}}"
+					}
+				],
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{booking_id}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{booking_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"if(pm.info.requestName=='5-UpdateBookingById'||pm.info.requestName=='6-DeleteBookingById'){\r",
+					"\r",
+					"//Generate a token using the auth api(CreateToken) and fetch the token from the response\r",
+					"\r",
+					"//the sendRequest method will send the request programmatically\r",
+					"//ie using a script\r",
+					"\r",
+					"//The elements to consider before any request will be \r",
+					"//1.http method the api uses like GET,POST,PUT,DELETE etc\r",
+					"//2.URL\r",
+					"//3.header in curly brackets as there are multiple keys:values\r",
+					"//4.body along with the mode,raw etc\r",
+					"\r",
+					"pm.sendRequest({\r",
+					"    method: 'POST',\r",
+					"    url: pm.environment.get(\"baseURL\")+'/auth',\r",
+					"    header:{\r",
+					"        'Content-Type' : 'application/json'\r",
+					"    },\r",
+					"    body:{\r",
+					"        mode: 'raw',\r",
+					"        //Converts a JavaScript Object to a JSON string.\r",
+					"        //AS we ultimately need JSON and not JS Object\r",
+					"\r",
+					"            raw: JSON.stringify({\r",
+					"                //{} wont work here it only works in the body\r",
+					"                \"username\": pm.environment.get(\"username\"),\r",
+					"                //The username is picked up from the environment variable\r",
+					"                \"password\": pm.environment.get(\"password\")\r",
+					"                //The password is picked up from the environment variable\r",
+					"            })\r",
+					"        //The entire javascript will be converted in JSON and stored in\r",
+					"        //a raw object\r",
+					"    }\r",
+					"},function(error,response){\r",
+					"//The response of the request is stored in the \"response\" object\r",
+					"//ow if it returns an \"error\" then its stored in \"error\" object\r",
+					"//This already predefined in javascript\r",
+					"//The response will be in JSON\r",
+					"\r",
+					"    if(error){\r",
+					"        console.log(error);\r",
+					"    }\r",
+					"    else{\r",
+					"        //The response will be in JSON and needs to be converted to a \r",
+					"        //javascript object\r",
+					"        const responseBody=JSON.parse(response.text());\r",
+					"        const newTokenId=responseBody.token;\r",
+					"        console.log(\"new token Id:\"+newTokenId);\r",
+					"        pm.variables.set(\"new_token_id\",newTokenId);\r",
+					"        }\r",
+					"    })\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
