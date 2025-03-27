@@ -18,13 +18,13 @@ pipeline {
             parallel {
                 stage('Pull GoRest Image') {
                     steps {
-                        //sh 'docker pull naveenkhunteta/gorestddtest:1.0'
+                      //sh 'docker pull naveenkhunteta/gorestddtest:1.0'
 						bat 'docker pull ayeshayusuf/gorestddtest:3.0'
                     }
                 }
                 stage('Pull Booking Image') {
                     steps {
-                        //sh 'docker pull naveenkhunteta/mybookingapi:1.0'
+                      //sh 'docker pull naveenkhunteta/mybookingapi:1.0'
 						bat 'docker pull ayeshayusuf/mybookingsapi:2.0'
                     }
                 }
@@ -35,7 +35,7 @@ pipeline {
             steps {
 				  //sh 'mkdir -p $(pwd)/newman'
 				  bat 'if not exist "%cd%/newman/" mkdir "%cd%/newman/"'
-				  //This checks if the "newman" folder doesn't exist then creates the folder ow doesnt do anything
+				  //This checks if the "newman" folder doesn't exist then creates it
             }
         }
 
